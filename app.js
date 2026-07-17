@@ -121,3 +121,80 @@ if (pdfFile && analyzeBtn && status) {
     });
 
 }
+// ===============================
+// PDF読み込み
+// ===============================
+
+async function readPDF(file){
+
+    const reader = new FileReader();
+
+    reader.onload = async function(){
+
+        const typedArray = new Uint8Array(reader.result);
+
+        const pdf = await pdfjsLib.getDocument({
+            data: typedArray
+        }).promise;
+
+        let text = "";
+
+        for(let page=1; page<=pdf.numPages; page++){
+
+            const p = await pdf.getPage(page);
+
+            const content = await p.getTextContent();
+
+            text += content.items
+                .map(item => item.str)
+                .join(" ");
+
+            text += "\n\n";
+        }
+
+        console.log(text);
+
+        document.getElementById("status").textContent =
+            "PDF読込完了（" + pdf.numPages + "ページ）";
+
+        // 次の段階でAI分析を実行
+        analyzeText(text);
+
+    };
+
+    reader.readAsArrayBuffer(file);
+
+}
+
+function analyzeText(text){
+
+    const newsList = document.getElementById("newsList");
+
+    newsList.innerHTML = "";
+
+    const card = document.createElement("article");
+
+    card.className = "card importance-high";
+
+    card.innerHTML = `
+        <h2>PDF解析結果</h2>
+        <p>${text.substring(0,800)}...</p>
+    `;
+
+    newsList.appendChild(card);
+
+}
+
+analyzeBtn.addEventListener("click",()=>{
+
+    if(!pdfFile.files.length){
+
+        alert("PDFを選択してください");
+
+        return;
+
+    }
+
+    readPDF(pdfFile.files[0]);
+
+});
