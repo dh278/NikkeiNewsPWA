@@ -92,3 +92,32 @@ if ("serviceWorker" in navigator) {
 // ・お気に入り保存
 
 // ・ダークモード
+const pdfFile = document.getElementById("pdfFile");
+
+const analyzeBtn = document.getElementById("analyzeBtn");
+
+const status = document.getElementById("status");
+
+if (pdfFile && analyzeBtn && status) {
+
+    analyzeBtn.addEventListener("click", () => {
+
+        if (!pdfFile.files.length) {
+
+            status.textContent = "PDFを選択してください";
+
+            return;
+
+        }
+
+        const file = pdfFile.files[0];
+
+        status.textContent =
+
+            "選択中：" + file.name +
+
+            "（解析機能は次の段階で追加します）";
+
+    });
+
+}
