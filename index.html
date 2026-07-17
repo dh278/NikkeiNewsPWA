@@ -1,129 +1,90 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='manifest' href='manifest.json'><link rel='stylesheet' href='style.css'><title>Nikkei News PWA</title></head><body><h1>新聞ダッシュボード</h1><input id='q' placeholder='検索'><ul id='list'></ul><script src='app.js'></script></body></html>
 <!DOCTYPE html>
-
 <html lang="ja">
-
 <head>
-
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>新聞ダッシュボード Ver.2</title>
+  <title>Nikkei News PWA</title>
 
   <link rel="manifest" href="manifest.json">
-
   <link rel="stylesheet" href="style.css">
 
-  <meta name="theme-color" content="#1976d2">
-
+  <meta name="theme-color" content="#1565c0">
 </head>
 
 <body>
 
 <header class="header">
-
   <h1>📰 新聞ダッシュボード</h1>
-
   <p id="today"></p>
-
 </header>
 
 <nav class="menu">
-
   <button class="active">今日</button>
-
   <button>重要</button>
-
   <button>AI</button>
-
   <button>製造業</button>
-
   <button>物流</button>
-
   <button>地域企業</button>
-
 </nav>
 
-<main id="newsList">
+<main>
 
-  <article class="card importance-high">
+<section class="upload-box">
 
-    <h2>AI・半導体</h2>
+<h2>📄 日経新聞PDF</h2>
 
-    <p>メモリー投資競争が激化</p>
+<input
+type="file"
+id="pdfFile"
+accept=".pdf"
+>
 
-    <span class="tag">重要度 ★★★★★</span>
+<button id="analyzeBtn">
+AIで分析する
+</button>
 
-  </article>
+<p id="status">
+PDFを選択してください
+</p>
 
-  <article class="card">
+</section>
 
-    <h2>製造業</h2>
+<section id="newsList">
 
-    <p>国内工場投資が拡大</p>
+<article class="card importance-high">
+<h2>AI・半導体</h2>
+<p>メモリー投資競争が激化</p>
+<span class="tag">★★★★★</span>
+</article>
 
-    <span class="tag">★★★★☆</span>
+<article class="card">
+<h2>製造業</h2>
+<p>国内工場投資が拡大</p>
+<span class="tag">★★★★☆</span>
+</article>
 
-  </article>
+<article class="card">
+<h2>物流</h2>
+<p>物流拠点の再編が進行</p>
+<span class="tag">★★★★☆</span>
+</article>
 
-  <article class="card">
+<article class="card">
+<h2>地域企業</h2>
+<p>群馬・長野企業ニュース</p>
+<span class="tag">★★★☆☆</span>
+</article>
 
-    <h2>物流</h2>
-
-    <p>物流拠点の再編が進行</p>
-
-    <span class="tag">★★★★☆</span>
-
-  </article>
-
-  <article class="card">
-
-    <h2>地域企業</h2>
-
-    <p>群馬・長野の企業ニュース</p>
-
-    <span class="tag">★★★☆☆</span>
-
-  </article>
+</section>
 
 </main>
 
 <footer>
-
-  Newspaper Dashboard Ver.2
-
+Newspaper Dashboard Ver.2
 </footer>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js"></script>
 <script src="app.js"></script>
 
 </body>
-
 </html>
-<section class="upload-box">
-
-  <h2>📄 新聞PDF</h2>
-
-  <input
-
-    type="file"
-
-    id="pdfFile"
-
-    accept=".pdf"
-
-  >
-
-  <button id="analyzeBtn">
-
-    AIで分析する
-
-  </button>
-
-  <p id="status">
-
-    PDFを選択してください
-
-  </p>
-
-</section>
