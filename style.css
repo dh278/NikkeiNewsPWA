@@ -200,3 +200,52 @@ footer{
 }
 
 }
+.upload-box{
+
+    background:#fff;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+}
+
+.upload-box input{
+
+    width:100%;
+
+    margin:15px 0;
+
+}
+
+#analyzeBtn{
+
+    width:100%;
+
+    padding:15px;
+
+    background:#1565c0;
+
+    color:#fff;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+}
+
+#status{
+
+    margin-top:15px;
+
+    color:#666;
+
+}
