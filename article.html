@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ニュース詳細</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>📰 記事詳細</h1>
+
+</header>
+
+
+
+<main>
+
+<div class="news-card">
+
+
+<h2 id="title">
+読み込み中
+</h2>
+
+
+<p id="summary">
+</p>
+
+
+<div class="news-meta">
+
+<span id="category"></span>
+
+<span id="date"></span>
+
+</div>
+
+
+<p>
+
+<strong>企業：</strong>
+
+<span id="company"></span>
+
+</p>
+
+
+<p>
+
+<strong>テーマ：</strong>
+
+<span id="theme"></span>
+
+</p>
+
+
+<p>
+
+<strong>重要度：</strong>
+
+<span id="importance"></span>
+
+</p>
+
+
+</div>
+
+
+<a href="./">
+
+← ニュース一覧へ戻る
+
+</a>
+
+
+</main>
+
+
+
+<script>
+
+
+async function loadArticle(){
+
+
+const params =
+new URLSearchParams(
+location.search
+);
+
+
+const id =
+Number(
+params.get("id")
+);
+
+
+
+const today =
+new Date()
+.toISOString()
+.slice(0,10);
+
+
+
+const res =
+await fetch(
+`data/${today}.json`
+);
+
+
+
+const data =
+await res.json();
+
+
+
+const article =
+data.find(
+x=>x.id===id
+);
+
+
+
+if(article){
+
+
+document.getElementById("title")
+.textContent =
+article.title;
+
+
+document.getElementById("summary")
+.textContent =
+article.summary;
+
+
+document.getElementById("category")
+.textContent =
+article.category;
+
+
+document.getElementById("date")
+.textContent =
+article.date;
+
+
+document.getElementById("company")
+.textContent =
+article.company;
+
+
+document.getElementById("theme")
+.textContent =
+article.theme;
+
+
+document.getElementById("importance")
+.textContent =
+article.importance;
+
+
+}
+
+
+}
+
+
+
+loadArticle();
+
+
+</script>
+
+
+</body>
+
+</html>
