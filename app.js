@@ -1,200 +1,420 @@
-fetch('data/2026-07-17.json').then(r=>r.json()).then(d=>{const l=document.getElementById('list');const q=document.getElementById('q');function render(f=''){l.innerHTML='';d.filter(x=>x.title.includes(f)||x.summary.includes(f)).forEach(x=>{let li=document.createElement('li');li.innerHTML='<b>'+x.title+'</b><br>'+x.summary;l.appendChild(li);});}q.oninput=()=>render(q.value);render();});if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js');
-// ================================
-
-// 新聞ダッシュボード Ver.2
-
-// app.js
-
-// ================================
-
-// 今日の日付を表示
-
-const today = document.getElementById("today");
-
-if (today) {
-
-    const now = new Date();
-
-    const dateString =
-
-        now.getFullYear() + "年" +
-
-        (now.getMonth() + 1) + "月" +
-
-        now.getDate() + "日";
-
-    today.textContent = dateString;
-
-}
-
-// メニューボタン
-
-const buttons = document.querySelectorAll(".menu button");
-
-buttons.forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        buttons.forEach(btn => {
-
-            btn.classList.remove("active");
-
-        });
-
-        button.classList.add("active");
-
-        console.log(button.textContent + " を選択");
-
-    });
-
-});
-
-// Service Worker登録（PWA）
-
-if ("serviceWorker" in navigator) {
-
-    window.addEventListener("load", () => {
-
-        navigator.serviceWorker
-
-            .register("./sw.js")
-
-            .then(() => {
-
-                console.log("Service Worker登録成功");
-
-            })
-
-            .catch(err => {
-
-                console.log("登録失敗", err);
-
-            });
-
-    });
-
-}
-
-// 今後追加予定
-
-// ・PDF読込
-
-// ・AI要約
-
-// ・重要度ランキング
-
-// ・企業抽出
-
-// ・営業リスト生成
-
-// ・検索機能
-
-// ・お気に入り保存
-
-// ・ダークモード
-const pdfFile = document.getElementById("pdfFile");
-
-const analyzeBtn = document.getElementById("analyzeBtn");
-
-const status = document.getElementById("status");
-
-if (pdfFile && analyzeBtn && status) {
-
-    analyzeBtn.addEventListener("click", () => {
-
-        if (!pdfFile.files.length) {
-
-            status.textContent = "PDFを選択してください";
-
-            return;
-
-        }
-
-        const file = pdfFile.files[0];
-
-        status.textContent =
-
-            "選択中：" + file.name +
-
-            "（解析機能は次の段階で追加します）";
-
-    });
-
-}
 // ===============================
-// PDF読み込み
+// NikkeiNewsPWA Ver.3
+// Application Script
 // ===============================
 
-async function readPDF(file){
 
-    const reader = new FileReader();
+let newsData = [];
 
-    reader.onload = async function(){
 
-        const typedArray = new Uint8Array(reader.result);
+// JSON読み込み
+async function loadNews(){
 
-        const pdf = await pdfjsLib.getDocument({
-            data: typedArray
-        }).promise;
+    try{
 
-        let text = "";
+        const today =
+        new Date()
+        .toISOString()
+        .slice(0,10);
 
-        for(let page=1; page<=pdf.numPages; page++){
 
-            const p = await pdf.getPage(page);
+        const response =
+        await fetch(
+            `data/${today}.json`
+        );
 
-            const content = await p.getTextContent();
 
-            text += content.items
-                .map(item => item.str)
-                .join(" ");
+        newsData =
+        await response.json();
 
-            text += "\n\n";
-        }
 
-        console.log(text);
+        renderNews(newsData);
 
-        document.getElementById("status").textContent =
-            "PDF読込完了（" + pdf.numPages + "ページ）";
 
-        // 次の段階でAI分析を実行
-        analyzeText(text);
+        updateDashboard(newsData);
 
-    };
 
-    reader.readAsArrayBuffer(file);
+    }catch(error){
 
-}
+        document.getElementById(
+            "newsList"
+        ).innerHTML =
+        `
+        <div class="news-card">
+        <h3>ニュースデータがありません</h3>
+        <p>
+        dataフォルダにJSONファイルを配置してください。
+        </p>
+        </div>
+        `;
 
-function analyzeText(text){
-
-    const newsList = document.getElementById("newsList");
-
-    newsList.innerHTML = "";
-
-    const card = document.createElement("article");
-
-    card.className = "card importance-high";
-
-    card.innerHTML = `
-        <h2>PDF解析結果</h2>
-        <p>${text.substring(0,800)}...</p>
-    `;
-
-    newsList.appendChild(card);
-
-}
-
-analyzeBtn.addEventListener("click",()=>{
-
-    if(!pdfFile.files.length){
-
-        alert("PDFを選択してください");
-
-        return;
+        console.error(error);
 
     }
 
-    readPDF(pdfFile.files[0]);
+}
+
+
+
+// 記事表示
+
+function renderNews(data){
+
+
+    const list =
+    document.getElementById(
+        "newsList"
+    );
+
+
+    list.innerHTML="";
+
+
+    data.forEach(
+        (item,index)=>{
+
+
+        const favorite =
+        getFavorites()
+        .includes(index);
+
+
+        const card =
+        document.createElement(
+            "div"
+        );
+
+
+        card.className =
+        "news-card";
+
+
+        card.innerHTML =
+
+        `
+        <h3>
+        ${item.title}
+        </h3>
+
+        <p>
+        ${item.summary}
+        </p>
+
+
+        <div class="news-meta">
+
+        <span>
+        ${item.category}
+        </span>
+
+        <span>
+        ${item.date}
+        </span>
+
+        </div>
+
+
+        <button
+        onclick="toggleFavorite(${index})">
+
+        ${favorite ? "⭐" : "☆"}
+
+        </button>
+
+        `;
+
+
+        list.appendChild(card);
+
+
+    });
+
+
+}
+
+
+
+
+// 検索・カテゴリ処理
+
+function filterNews(){
+
+
+    const keyword =
+    document
+    .getElementById("search")
+    .value
+    .toLowerCase();
+
+
+    const category =
+    document
+    .getElementById("category")
+    .value;
+
+
+
+    const result =
+    newsData.filter(item=>{
+
+
+        const text =
+
+        (
+        item.title+
+        item.summary+
+        item.category
+        )
+        .toLowerCase();
+
+
+
+        const matchKeyword =
+        text.includes(keyword);
+
+
+
+        const matchCategory =
+        category === ""
+        ||
+        item.category === category;
+
+
+
+        return (
+            matchKeyword
+            &&
+            matchCategory
+        );
+
+    });
+
+
+
+    renderNews(result);
+
+
+}
+
+
+
+// お気に入り
+
+function getFavorites(){
+
+    return JSON.parse(
+
+        localStorage
+        .getItem(
+            "favorites"
+        )
+
+    ) || [];
+
+}
+
+
+
+function toggleFavorite(index){
+
+
+    let favorites =
+    getFavorites();
+
+
+
+    if(
+        favorites.includes(index)
+    ){
+
+        favorites =
+        favorites.filter(
+            x=>x!==index
+        );
+
+
+    }else{
+
+
+        favorites.push(index);
+
+    }
+
+
+
+    localStorage.setItem(
+
+        "favorites",
+
+        JSON.stringify(
+            favorites
+        )
+
+    );
+
+
+    renderNews(newsData);
+
+}
+
+
+
+// ダッシュボード
+
+function updateDashboard(data){
+
+
+    document
+    .getElementById(
+        "count"
+    )
+    .textContent =
+    data.length;
+
+
+
+    document
+    .getElementById(
+        "date"
+    )
+    .textContent =
+    data[0]?.date || "---";
+
+
+
+    const categories = {};
+
+
+    data.forEach(item=>{
+
+        categories[item.category]
+        =
+        (categories[item.category]||0)+1;
+
+    });
+
+
+
+    const top =
+    Object.entries(categories)
+    .sort(
+        (a,b)=>b[1]-a[1]
+    )[0];
+
+
+    document
+    .getElementById(
+        "theme"
+    )
+    .textContent =
+    top
+    ?
+    top[0]
+    :
+    "---";
+
+
+}
+
+
+
+// ダークモード
+
+function setupDarkMode(){
+
+
+    const button =
+    document.getElementById(
+        "darkMode"
+    );
+
+
+
+    const saved =
+    localStorage
+    .getItem(
+        "darkMode"
+    );
+
+
+
+    if(saved==="on"){
+
+        document.body
+        .classList
+        .add("dark");
+
+    }
+
+
+
+    button.onclick =
+    ()=>{
+
+
+        document.body
+        .classList
+        .toggle(
+            "dark"
+        );
+
+
+        localStorage
+        .setItem(
+
+            "darkMode",
+
+            document.body
+            .classList
+            .contains("dark")
+            ?
+            "on"
+            :
+            "off"
+
+        );
+
+    };
+
+
+}
+
+
+
+// 起動
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+    loadNews();
+
+
+    setupDarkMode();
+
+
+
+    document
+    .getElementById(
+        "search"
+    )
+    .addEventListener(
+        "input",
+        filterNews
+    );
+
+
+    document
+    .getElementById(
+        "category"
+    )
+    .addEventListener(
+        "change",
+        filterNews
+    );
+
 
 });
