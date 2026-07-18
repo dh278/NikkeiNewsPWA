@@ -1,251 +1,391 @@
-body{font-family:sans-serif;margin:20px}li{margin:8px 0}
-/* ===== 新聞ダッシュボード Ver.2 ===== */
+    /* ==========================
+   NikkeiNewsPWA Ver.3
+   Newspaper Dashboard Style
+========================== */
 
-*{
+* {
+    box-sizing: border-box;
+}
 
-    margin:0;
+body {
+    margin: 0;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
 
-    padding:0;
+    background: #f5f7fb;
+    color: #222;
+}
 
-    box-sizing:border-box;
+
+/* Header */
+
+header {
+
+    background: #0f3d91;
+    color: white;
+
+    padding: 18px 16px;
+
+    text-align: center;
 
 }
 
-body{
 
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+header h1 {
 
-    background:#f4f6f9;
+    margin: 0;
 
-    color:#222;
+    font-size: 1.4rem;
+
+}
+
+
+header p {
+
+    margin: 6px 0 0;
+
+    font-size: 0.85rem;
+
+    opacity: .9;
+
+}
+
+
+/* Controls */
+
+.control {
+
+    display: flex;
+
+    gap: 8px;
+
+    padding: 12px;
+
+    background: white;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
+
+    box-shadow:
+    0 2px 8px rgba(0,0,0,.08);
+
+}
+
+
+.control input {
+
+    flex: 1;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    border: 1px solid #ccc;
+
+    font-size: 16px;
+
+}
+
+
+.control select {
+
+    width: 90px;
+
+    border-radius: 8px;
+
+    border: 1px solid #ccc;
+
+}
+
+
+.control button {
+
+    width: 42px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #222;
+
+    color: white;
+
+    font-size: 18px;
+
+}
+
+
+/* Main */
+
+main {
+
+    padding: 12px;
+
+}
+
+
+h2 {
+
+    font-size: 1.1rem;
+
+    border-left:
+    5px solid #0f3d91;
+
+    padding-left: 10px;
+
+}
+
+
+
+/* News Cards */
+
+#newsList {
+
+    display: grid;
+
+    gap: 12px;
+
+}
+
+
+
+.news-card {
+
+    background: white;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    box-shadow:
+    0 3px 10px rgba(0,0,0,.08);
+
+}
+
+
+.news-card h3 {
+
+    margin-top:0;
+
+    font-size:1.05rem;
+
+}
+
+
+.news-card p {
 
     line-height:1.6;
 
-}
-
-.header{
-
-    background:linear-gradient(135deg,#1565c0,#42a5f5);
-
-    color:#fff;
-
-    padding:20px;
-
-    text-align:center;
-
-    position:sticky;
-
-    top:0;
-
-    z-index:100;
+    font-size:.9rem;
 
 }
 
-.header h1{
 
-    font-size:28px;
-
-    margin-bottom:8px;
-
-}
-
-#today{
-
-    font-size:14px;
-
-    opacity:.9;
-
-}
-
-.menu{
+.news-meta {
 
     display:flex;
 
-    overflow-x:auto;
+    justify-content:space-between;
+
+    font-size:.75rem;
+
+    color:#666;
+
+}
+
+
+/* Dashboard */
+
+
+.dashboard {
+
+    margin-top:25px;
+
+}
+
+
+
+.cards {
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(3,1fr);
 
     gap:10px;
 
+}
+
+
+.card {
+
+    background:white;
+
     padding:12px;
 
-    background:#fff;
+    text-align:center;
 
-    border-bottom:1px solid #ddd;
+    border-radius:10px;
+
+    box-shadow:
+    0 2px 8px rgba(0,0,0,.08);
 
 }
 
-.menu button{
 
-    border:none;
 
-    background:#e3f2fd;
+.card h3 {
 
-    color:#1565c0;
+    font-size:.8rem;
 
-    padding:10px 18px;
+    color:#555;
 
-    border-radius:20px;
+}
+
+
+
+.card p {
+
+    font-size:1.3rem;
 
     font-weight:bold;
 
-    cursor:pointer;
-
-    white-space:nowrap;
+    margin:5px;
 
 }
 
-.menu button.active{
 
-    background:#1565c0;
+/* Footer */
+
+footer {
+
+    text-align:center;
+
+    padding:20px;
+
+    color:#777;
+
+    font-size:.8rem;
+
+}
+
+
+
+/* Dark Mode */
+
+body.dark {
+
+    background:#111827;
 
     color:white;
 
 }
 
-main{
 
-    max-width:900px;
+
+body.dark header {
+
+    background:#020617;
+
+}
+
+
+
+body.dark .control,
+
+body.dark .news-card,
+
+body.dark .card {
+
+    background:#1f2937;
+
+    color:white;
+
+}
+
+
+body.dark input,
+
+body.dark select {
+
+    background:#374151;
+
+    color:white;
+
+    border-color:#555;
+
+}
+
+
+
+/* Tablet / PC */
+
+@media(min-width:768px){
+
+
+main {
+
+    max-width:1000px;
 
     margin:auto;
 
-    padding:15px;
+}
+
+
+#newsList {
+
+    grid-template-columns:
+
+    repeat(2,1fr);
 
 }
 
-.card{
-
-    background:white;
-
-    border-radius:15px;
-
-    padding:18px;
-
-    margin-bottom:16px;
-
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
-
-    transition:.2s;
 
 }
 
-.card:hover{
 
-    transform:translateY(-3px);
 
-}
+/* Smartphone */
 
-.card h2{
+@media(max-width:480px){
 
-    color:#1565c0;
 
-    margin-bottom:8px;
+.control {
 
-}
-
-.importance-high{
-
-    border-left:8px solid #f44336;
+    flex-wrap:wrap;
 
 }
 
-.tag{
 
-    display:inline-block;
-
-    margin-top:12px;
-
-    background:#ffe082;
-
-    padding:6px 12px;
-
-    border-radius:30px;
-
-    font-size:13px;
-
-    font-weight:bold;
-
-}
-
-footer{
-
-    text-align:center;
-
-    padding:30px;
-
-    color:#888;
-
-    font-size:14px;
-
-}
-
-@media(max-width:600px){
-
-.header h1{
-
-    font-size:22px;
-
-}
-
-.card{
-
-    padding:15px;
-
-}
-
-.menu button{
-
-    font-size:13px;
-
-    padding:8px 14px;
-
-}
-
-}
-.upload-box{
-
-    background:#fff;
-
-    border-radius:15px;
-
-    padding:20px;
-
-    margin-bottom:20px;
-
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
-
-}
-
-.upload-box input{
+.control input {
 
     width:100%;
 
-    margin:15px 0;
+}
+
+
+.control select {
+
+    flex:1;
 
 }
 
-#analyzeBtn{
 
-    width:100%;
+.cards {
 
-    padding:15px;
+    grid-template-columns:
 
-    background:#1565c0;
-
-    color:#fff;
-
-    border:none;
-
-    border-radius:10px;
-
-    font-size:18px;
-
-    font-weight:bold;
+    1fr;
 
 }
 
-#status{
-
-    margin-top:15px;
-
-    color:#666;
 
 }
