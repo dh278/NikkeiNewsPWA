@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>お気に入りニュース</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+<h1>⭐ お気に入りニュース</h1>
+</header>
+
+
+<main>
+
+<div id="favoriteList">
+読み込み中...
+</div>
+
+
+<br>
+
+<a href="./">
+← ニュース一覧へ戻る
+</a>
+
+
+</main>
+
+
+
+<script>
+
+async function loadFavorites() {
+
+
+    const favorites = JSON.parse(
+        localStorage.getItem("favorites")
+    ) || [];
+
+
+
+    const today =
+        new Date()
+        .toISOString()
+        .slice(0,10);
+
+
+
+    const response =
+        await fetch(
+            "data/" + today + ".json"
+        );
+
+
+
+    const data =
+        await response.json();
+
+
+
+    const list =
+        data.filter(
+            item =>
+            favorites.includes(item.id)
+        );
+
+
+
+    const area =
+        document.getElementById(
+            "favoriteList"
+        );
+
+
+
+    area.innerHTML = "";
+
+
+
+    if(list.length === 0) {
+
+
+        area.innerHTML = `
+
+        <div class="news-card">
+
+        <h3>
+        お気に入りはありません
+        </h3>
+
+        <p>
+        ニュース一覧から☆を押してください。
+        </p>
+
+        </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    list.forEach(item => {
+
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "news-card";
+
+
+
+        card.innerHTML = `
+
+        <h3 onclick="openArticle(${item.id})"
+        style="cursor:pointer">
+
+        ${item.title}
+
+        </h3>
+
+
+        <p>
+        ${item.summary}
+        </p>
+
+
+        <div class="news-meta">
+
+        <span>
+        ${item.category}
+        </span>
+
+
+        <span>
+        ${item.date}
+        </span>
+
+        </div>
+
+        `;
+
+
+
+        area.appendChild(card);
+
+
+    });
+
+
+}
+
+
+
+function openArticle(id) {
+
+
+    location.href =
+        "article.html?id=" + id;
+
+
+}
+
+
+
+loadFavorites();
+
+
+</script>
+
+
+</body>
+
+</html>
