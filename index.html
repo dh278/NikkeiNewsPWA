@@ -1,90 +1,118 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nikkei News PWA</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+<title>日経ニュースダッシュボード</title>
 
-  <meta name="theme-color" content="#1565c0">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+
+<meta name="theme-color" content="#1d4ed8">
 </head>
 
 <body>
 
-<header class="header">
-  <h1>📰 新聞ダッシュボード</h1>
-  <p id="today"></p>
+<header>
+    <h1>📰 日経ニュースダッシュボード</h1>
+    <p>News Intelligence Dashboard Ver.3</p>
 </header>
 
-<nav class="menu">
-  <button class="active">今日</button>
-  <button>重要</button>
-  <button>AI</button>
-  <button>製造業</button>
-  <button>物流</button>
-  <button>地域企業</button>
-</nav>
+
+<section class="control">
+
+    <input 
+      id="search"
+      type="text"
+      placeholder="ニュースを検索">
+
+    <select id="category">
+        <option value="">すべて</option>
+        <option value="AI">AI</option>
+        <option value="半導体">半導体</option>
+        <option value="金融">金融</option>
+        <option value="製造業">製造業</option>
+        <option value="物流">物流</option>
+        <option value="海外">海外</option>
+    </select>
+
+    <button id="darkMode">
+        🌙
+    </button>
+
+</section>
+
 
 <main>
 
-<section class="upload-box">
+<section>
+<h2>📌 ニュース一覧</h2>
 
-<h2>📄 日経新聞PDF</h2>
-
-<input
-type="file"
-id="pdfFile"
-accept=".pdf"
->
-
-<button id="analyzeBtn">
-AIで分析する
-</button>
-
-<p id="status">
-PDFを選択してください
-</p>
+<div id="newsList">
+読み込み中…
+</div>
 
 </section>
 
-<section id="newsList">
 
-<article class="card importance-high">
-<h2>AI・半導体</h2>
-<p>メモリー投資競争が激化</p>
-<span class="tag">★★★★★</span>
-</article>
+<section class="dashboard">
 
-<article class="card">
-<h2>製造業</h2>
-<p>国内工場投資が拡大</p>
-<span class="tag">★★★★☆</span>
-</article>
+<h2>📊 分析ダッシュボード</h2>
 
-<article class="card">
-<h2>物流</h2>
-<p>物流拠点の再編が進行</p>
-<span class="tag">★★★★☆</span>
-</article>
+<div class="cards">
 
-<article class="card">
-<h2>地域企業</h2>
-<p>群馬・長野企業ニュース</p>
-<span class="tag">★★★☆☆</span>
-</article>
+<div class="card">
+<h3>記事数</h3>
+<p id="count">0</p>
+</div>
+
+
+<div class="card">
+<h3>注目テーマ</h3>
+<p id="theme">
+---</p>
+</div>
+
+
+<div class="card">
+<h3>更新日</h3>
+<p id="date">
+---</p>
+</div>
+
+</div>
 
 </section>
+
 
 </main>
 
+
 <footer>
-Newspaper Dashboard Ver.2
+
+<p>
+NikkeiNewsPWA Ver.3
+</p>
+
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js"></script>
+
 <script src="app.js"></script>
+
+
+<script>
+
+if("serviceWorker" in navigator){
+
+navigator.serviceWorker.register(
+"service-worker.js"
+);
+
+}
+
+</script>
+
 
 </body>
 </html>
