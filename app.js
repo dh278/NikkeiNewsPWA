@@ -1,52 +1,56 @@
-// ===============================
+// ==================================
 // NikkeiNewsPWA Ver.3
-// Application Script
-// ===============================
+// app.js 完成版
+// ニュース表示・検索・カテゴリ・お気に入り・詳細ページ対応
+// ==================================
 
 
 let newsData = [];
 
 
-// JSON読み込み
-async function loadNews(){
+// ===============================
+// ニュース読み込み
+// ===============================
 
-    try{
+async function loadNews() {
+
+    try {
 
         const today =
-        new Date()
-        .toISOString()
-        .slice(0,10);
+            new Date()
+            .toISOString()
+            .slice(0, 10);
 
 
         const response =
-        await fetch(
-            `data/${today}.json`
-        );
+            await fetch(
+                `data/${today}.json`
+            );
 
 
         newsData =
-        await response.json();
+            await response.json();
 
 
         renderNews(newsData);
 
-
         updateDashboard(newsData);
 
 
-    }catch(error){
+    } catch(error) {
 
-        document.getElementById(
-            "newsList"
-        ).innerHTML =
+
+        document
+        .getElementById("newsList")
+        .innerHTML =
+
         `
         <div class="news-card">
         <h3>ニュースデータがありません</h3>
-        <p>
-        dataフォルダにJSONファイルを配置してください。
-        </p>
+        <p>dataフォルダのJSONを確認してください。</p>
         </div>
         `;
+
 
         console.error(error);
 
@@ -56,18 +60,20 @@ async function loadNews(){
 
 
 
-// 記事表示
+// ===============================
+// ニュース表示
+// ===============================
 
-function renderNews(data){
+function renderNews(data) {
 
 
     const list =
-    document.getElementById(
-        "newsList"
-    );
+        document.getElementById(
+            "newsList"
+        );
 
 
-    list.innerHTML="";
+    list.innerHTML = "";
 
 
     data.forEach(
@@ -75,30 +81,38 @@ function renderNews(data){
 
 
         const favorite =
-        getFavorites()
-        .includes(index);
+            getFavorites()
+            .includes(item.id);
+
 
 
         const card =
-        document.createElement(
-            "div"
-        );
+            document.createElement(
+                "div"
+            );
 
 
         card.className =
-        "news-card";
+            "news-card";
+
 
 
         card.innerHTML =
 
         `
-        <h3>
+
+        <h3 onclick="openArticle(${item.id})"
+        style="cursor:pointer">
+
         ${item.title}
+
         </h3>
+
 
         <p>
         ${item.summary}
         </p>
+
 
 
         <div class="news-meta">
@@ -107,6 +121,7 @@ function renderNews(data){
         ${item.category}
         </span>
 
+
         <span>
         ${item.date}
         </span>
@@ -114,12 +129,14 @@ function renderNews(data){
         </div>
 
 
+
         <button
-        onclick="toggleFavorite(${index})">
+        onclick="toggleFavorite(${item.id})">
 
         ${favorite ? "⭐" : "☆"}
 
         </button>
+
 
         `;
 
@@ -129,65 +146,72 @@ function renderNews(data){
 
     });
 
-
 }
 
 
 
-
-// 検索・カテゴリ処理
+// ===============================
+// 検索・カテゴリ絞り込み
+// ===============================
 
 function filterNews(){
 
 
     const keyword =
-    document
-    .getElementById("search")
-    .value
-    .toLowerCase();
 
-
-    const category =
-    document
-    .getElementById("category")
-    .value;
-
-
-
-    const result =
-    newsData.filter(item=>{
-
-
-        const text =
-
-        (
-        item.title+
-        item.summary+
-        item.category
-        )
+        document
+        .getElementById("search")
+        .value
         .toLowerCase();
 
 
 
-        const matchKeyword =
-        text.includes(keyword);
+    const category =
+
+        document
+        .getElementById("category")
+        .value;
 
 
 
-        const matchCategory =
-        category === ""
-        ||
-        item.category === category;
+    const result =
+
+        newsData.filter(item=>{
+
+
+            const text =
+
+            (
+                item.title +
+                item.summary +
+                item.category +
+                item.theme
+            )
+            .toLowerCase();
 
 
 
-        return (
-            matchKeyword
-            &&
-            matchCategory
-        );
+            const keywordOK =
+                text.includes(keyword);
 
-    });
+
+
+            const categoryOK =
+
+                category === ""
+                ||
+                item.category === category;
+
+
+
+            return (
+                keywordOK
+                &&
+                categoryOK
+            );
+
+
+        });
 
 
 
@@ -198,45 +222,48 @@ function filterNews(){
 
 
 
+// ===============================
 // お気に入り
+// ===============================
 
 function getFavorites(){
 
+
     return JSON.parse(
 
-        localStorage
-        .getItem(
+        localStorage.getItem(
             "favorites"
         )
 
     ) || [];
 
+
 }
 
 
 
-function toggleFavorite(index){
+function toggleFavorite(id){
 
 
     let favorites =
-    getFavorites();
+        getFavorites();
 
 
 
     if(
-        favorites.includes(index)
+        favorites.includes(id)
     ){
 
         favorites =
         favorites.filter(
-            x=>x!==index
+            x=>x!==id
         );
 
 
     }else{
 
 
-        favorites.push(index);
+        favorites.push(id);
 
     }
 
@@ -253,30 +280,47 @@ function toggleFavorite(index){
     );
 
 
+
     renderNews(newsData);
+
 
 }
 
 
 
-// ダッシュボード
+
+// ===============================
+// 記事詳細ページ移動
+// ===============================
+
+function openArticle(id){
+
+
+    location.href =
+
+    `article.html?id=${id}`;
+
+
+}
+
+
+
+// ===============================
+// ダッシュボード更新
+// ===============================
 
 function updateDashboard(data){
 
 
     document
-    .getElementById(
-        "count"
-    )
+    .getElementById("count")
     .textContent =
     data.length;
 
 
 
     document
-    .getElementById(
-        "date"
-    )
+    .getElementById("date")
     .textContent =
     data[0]?.date || "---";
 
@@ -285,60 +329,71 @@ function updateDashboard(data){
     const categories = {};
 
 
+
     data.forEach(item=>{
 
-        categories[item.category]
-        =
-        (categories[item.category]||0)+1;
+
+        categories[item.category] =
+
+        (categories[item.category] || 0)
+
+        +1;
+
 
     });
 
 
 
     const top =
-    Object.entries(categories)
-    .sort(
-        (a,b)=>b[1]-a[1]
-    )[0];
+
+        Object.entries(categories)
+
+        .sort(
+            (a,b)=>b[1]-a[1]
+        )[0];
+
 
 
     document
-    .getElementById(
-        "theme"
-    )
+    .getElementById("theme")
     .textContent =
-    top
-    ?
-    top[0]
-    :
-    "---";
+
+        top
+        ?
+        top[0]
+        :
+        "---";
 
 
 }
 
 
 
+
+// ===============================
 // ダークモード
+// ===============================
 
 function setupDarkMode(){
 
 
     const button =
-    document.getElementById(
-        "darkMode"
-    );
+
+        document
+        .getElementById(
+            "darkMode"
+        );
 
 
 
-    const saved =
-    localStorage
-    .getItem(
-        "darkMode"
-    );
+    if(
+        localStorage.getItem(
+            "darkMode"
+        )
+        ===
+        "on"
 
-
-
-    if(saved==="on"){
+    ){
 
         document.body
         .classList
@@ -348,8 +403,7 @@ function setupDarkMode(){
 
 
 
-    button.onclick =
-    ()=>{
+    button.onclick = ()=>{
 
 
         document.body
@@ -359,8 +413,8 @@ function setupDarkMode(){
         );
 
 
-        localStorage
-        .setItem(
+
+        localStorage.setItem(
 
             "darkMode",
 
@@ -374,6 +428,7 @@ function setupDarkMode(){
 
         );
 
+
     };
 
 
@@ -381,7 +436,9 @@ function setupDarkMode(){
 
 
 
-// 起動
+// ===============================
+// 起動処理
+// ===============================
 
 document.addEventListener(
 
@@ -402,9 +459,13 @@ document.addEventListener(
         "search"
     )
     .addEventListener(
+
         "input",
+
         filterNews
+
     );
+
 
 
     document
@@ -412,8 +473,11 @@ document.addEventListener(
         "category"
     )
     .addEventListener(
+
         "change",
+
         filterNews
+
     );
 
 
