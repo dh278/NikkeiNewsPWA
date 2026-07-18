@@ -1,6 +1,7 @@
 // ==================================
 // NikkeiNewsPWA Ver.3
-// PDF Reader 抽出確認版
+// PDF Reader
+// 日経PDFクリーニング対応版
 // ==================================
 
 
@@ -9,34 +10,35 @@ document.addEventListener(
 ()=>{
 
 
-    const pdfFile =
-    document.getElementById(
-        "pdfFile"
-    );
+const pdfFile =
+document.getElementById(
+"pdfFile"
+);
 
 
-    if(!pdfFile){
-        return;
-    }
+if(!pdfFile){
+    return;
+}
 
 
-    pdfFile.addEventListener(
-    "change",
-    e=>{
+
+pdfFile.addEventListener(
+"change",
+e=>{
 
 
-        const file =
-        e.target.files[0];
+const file =
+e.target.files[0];
 
 
-        if(file){
+if(file){
 
-            readPDF(file);
+readPDF(file);
 
-        }
+}
 
 
-    });
+});
 
 
 });
@@ -48,171 +50,392 @@ document.addEventListener(
 async function readPDF(file){
 
 
-    const reader =
-    new FileReader();
+const reader =
+new FileReader();
 
 
 
-    reader.onload =
-    async function(){
+reader.onload =
+async function(){
 
 
-        const typedarray =
-        new Uint8Array(
-            this.result
-        );
+const typedarray =
+new Uint8Array(
+this.result
+);
 
 
 
-        const pdf =
+const pdf =
 
-        await pdfjsLib
-        .getDocument(
-            typedarray
-        )
-        .promise;
+await pdfjsLib
+.getDocument(
+typedarray
+)
+.promise;
 
 
 
-        let fullText = "";
+let fullText = "";
 
-        let pageResult = "";
 
 
+for(
+let i=1;
+i<=pdf.numPages;
+i++
+){
 
-        for(
-            let i = 1;
-            i <= pdf.numPages;
-            i++
-        ){
 
+const page =
+await pdf.getPage(i);
 
-            const page =
 
-            await pdf.getPage(i);
 
+const content =
+await page.getTextContent();
 
 
-            const content =
 
-            await page.getTextContent();
+let pageText =
 
+content.items
 
+.map(
+item=>item.str
+)
 
-            const pageText =
+.join(" ");
 
-            content.items
 
-            .map(
-                item=>item.str
-            )
 
-            .join(" ");
+pageText =
+cleanText(pageText);
 
 
 
-            fullText +=
+fullText +=
 
-            "\n\n--- PAGE "
-            + i +
-            " ---\n\n"
-            +
-            pageText;
+"\n"
++
+pageText;
 
 
 
-            pageResult +=
+}
 
-            `
-            <h3>
-            PAGE ${i}
-            </h3>
 
-            <p>
-            ${pageText}
-            </p>
 
-            `;
 
+console.log(
+"クリーニング後本文",
+fullText
+);
 
-        }
 
 
 
-        console.log(
-            "PDF抽出結果",
-            fullText
-        );
+createArticle(fullText);
 
 
 
-        let area =
+};
 
-        document.getElementById(
-            "pdfResult"
-        );
 
 
+reader.readAsArrayBuffer(
+file
+);
 
-        if(!area){
 
+}
 
-            area =
-            document.createElement(
-                "div"
-            );
 
 
-            area.id =
-            "pdfResult";
 
 
-            area.className =
-            "news-card";
 
+// ==============================
+// 不要文字削除
+// ==============================
 
+function cleanText(text){
 
-            document.body
-            .appendChild(
-                area
-            );
 
 
-        }
+return text
 
 
 
-        area.innerHTML =
+// URL削除
 
-        `
+.replace(
+/https?:\/\/\S+/g,
+""
+)
 
-        <h2>
-        PDF抽出結果
-        </h2>
 
-        ${pageResult}
 
-        `;
+// 日付削除
 
+.replace(
+/\d{4}\/\d{1,2}\/\d{1,2}/g,
+""
+)
 
 
-        alert(
 
-        "PDF抽出完了\nページ数："
-        +
-        pdf.numPages
+// PDF番号削除
 
-        );
+.replace(
+/\d+\s*PDF/g,
+""
+)
 
 
 
-    };
+// ページ番号系削除
 
+.replace(
+/^\s*\d+\s*$/gm,
+""
+)
 
 
-    reader.readAsArrayBuffer(
-        file
-    );
+
+// 空白整理
+
+.replace(
+/\s+/g,
+" "
+)
+
+
+
+.trim();
+
+
+
+}
+
+
+
+
+
+
+
+// ==============================
+// 記事作成
+// ==============================
+
+function createArticle(text){
+
+
+
+const article = {
+
+
+id:
+Date.now(),
+
+
+
+title:
+
+text.substring(
+0,
+60
+),
+
+
+
+summary:
+
+text.substring(
+0,
+200
+)
++
+"…",
+
+
+
+category:
+
+detectCategory(text),
+
+
+
+theme:
+
+detectTheme(text),
+
+
+
+company:
+
+detectCompany(text),
+
+
+
+date:
+
+new Date()
+.toISOString()
+.slice(0,10),
+
+
+
+importance:
+
+"中"
+
+
+};
+
+
+
+
+newsData.unshift(
+article
+);
+
+
+
+renderNews(
+newsData
+);
+
+
+
+updateDashboard(
+newsData
+);
+
+
+
+alert(
+"PDF記事を追加しました"
+);
+
+
+
+}
+
+
+
+
+
+
+
+function detectCategory(text){
+
+
+if(
+text.includes("半導体")
+||
+text.includes("AI")
+){
+
+return "半導体";
+
+}
+
+
+if(
+text.includes("物流")
+){
+
+return "物流";
+
+}
+
+
+if(
+text.includes("銀行")
+||
+text.includes("金利")
+){
+
+return "金融";
+
+}
+
+
+return "その他";
+
+
+}
+
+
+
+
+
+function detectTheme(text){
+
+
+if(
+text.includes("AI")
+){
+
+return "AI";
+
+}
+
+
+if(
+text.includes("投資")
+){
+
+return "設備投資";
+
+}
+
+
+return "ニュース";
+
+
+}
+
+
+
+
+
+function detectCompany(text){
+
+
+const list = [
+
+"トヨタ",
+"ソニー",
+"キオクシア",
+"日立",
+"三菱",
+"サムスン"
+
+];
+
+
+
+for(
+const company of list
+){
+
+
+if(
+text.includes(company)
+){
+
+return company;
+
+}
+
+
+}
+
+
+
+return "未分類";
 
 
 }
